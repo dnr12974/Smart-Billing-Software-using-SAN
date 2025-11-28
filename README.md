@@ -266,7 +266,7 @@ By combining:
 - SAN usage monitoring
 - Future storage capacity prediction
 
-this project delivers a **complete, intelligent, secure, scalable, and proactive storage-enabled billing system**. It proves that even small businesses can benefit from **enterprise-grade centralized storage and predictive storage management** using a cost-effective IP-SAN solution.
+This project delivers a **complete, intelligent, secure, scalable, and proactive storage-enabled billing system**. It proves that even small businesses can benefit from **enterprise-grade centralized storage and predictive storage management** using a cost-effective IP-SAN solution.
 
 ---
 
