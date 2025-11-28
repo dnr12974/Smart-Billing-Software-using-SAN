@@ -1,0 +1,10 @@
+Invoice: INV1764221896635
+Customer: Rahul Kumar
+Contact: 987868776
+Date: 2025-11-27
+=======================================
+Classmate notebooks x 2 @ 20 = 40
+---------------------------------------
+Total: 40.00
+Discount: 0.00
+Net Total: 40.00

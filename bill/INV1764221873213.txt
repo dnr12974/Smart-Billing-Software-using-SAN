@@ -1,0 +1,10 @@
+Invoice: INV1764221873213
+Customer: abc
+Contact: 123
+Date: 2025-11-27
+=======================================
+Classmate notebooks x 10 @ 20 = 200
+---------------------------------------
+Total: 200.00
+Discount: 0.00
+Net Total: 200.00

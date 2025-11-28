@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Smart Billing – Backup</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+    />
+    <style>
+      :root {
+        --bg: #0f172a;
+        --bg-card: #020617;
+        --bg-card-soft: #02081f;
+        --accent: #38bdf8;
+        --accent-soft: rgba(56, 189, 248, 0.15);
+        --accent-strong: #0ea5e9;
+        --border-subtle: #1f2937;
+        --text-main: #e5e7eb;
+        --text-muted: #9ca3af;
+        --danger: #f97373;
+        --success: #4ade80;
+        --warning: #fbbf24;
+        --radius-lg: 16px;
+        --radius-sm: 10px;
+        --shadow-elevated: 0 20px 40px rgba(15, 23, 42, 0.9);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont,
+          sans-serif;
+        background: radial-gradient(circle at top, #0b1729, #020617 55%);
+        color: var(--text-main);
+        display: flex;
+        flex-direction: column;
+      }
+      .app-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 28px;
+        border-bottom: 1px solid #1f2937;
+        background: rgba(15, 23, 42, 0.95);
+        backdrop-filter: blur(14px);
+        position: sticky;
+        top: 0;
+        z-index: 20;
+      }
+      .app-title-group {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .app-logo {
+        width: 38px;
+        height: 38px;
+        border-radius: 12px;
+        background: radial-gradient(circle at 20% 0%, #38bdf8, #0f172a 55%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.3),
+          0 18px 40px rgba(15, 23, 42, 0.8);
+        font-weight: 700;
+        letter-spacing: 0.02em;
+      }
+      .app-logo span {
+        font-size: 16px;
+        color: #e5f5ff;
+      }
+      .app-title-main {
+        font-size: 20px;
+        font-weight: 600;
+      }
+      .app-title-sub {
+        font-size: 12px;
+        color: var(--text-muted);
+      }
+      .pill {
+        padding: 6px 12px;
+        border-radius: 999px;
+        border: 1px solid rgba(148, 163, 184, 0.6);
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--text-muted);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .pill-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #22c55e;
+        box-shadow: 0 0 12px rgba(34, 197, 94, 0.8);
+      }
+      .nav-links {
+        display: flex;
+        gap: 10px;
+        margin-left: 24px;
+        font-size: 12px;
+      }
+      .nav-link {
+        color: var(--text-muted);
+        text-decoration: none;
+        padding: 4px 10px;
+        border-radius: 999px;
+        border: 1px solid transparent;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+      .nav-link:hover {
+        border-color: rgba(148, 163, 184, 0.8);
+      }
+      .nav-link.active {
+        border-color: var(--accent);
+        color: #e0f2fe;
+        background: rgba(56, 189, 248, 0.12);
+      }
+
+      .app-shell {
+        flex: 1;
+        display: flex;
+        padding: 20px;
+      }
+      .app-container {
+        width: 100%;
+        max-width: 100%;
+        display: block;
+      }
+
+      .card {
+        width: 100%;
+        background: radial-gradient(
+          circle at top left,
+          rgba(56, 189, 248, 0.13),
+          rgba(15, 23, 42, 0.95)
+        );
+        border-radius: var(--radius-lg);
+        padding: 28px;
+        border: 1px solid rgba(148, 163, 184, 0.3);
+        box-shadow: var(--shadow-elevated);
+        min-height: 70vh;
+      }
+      .card-header {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 18px;
+      }
+      .card-title {
+        font-size: 15px;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+        color: #e5f5ff;
+      }
+      .card-subtitle {
+        font-size: 12px;
+        color: var(--text-muted);
+      }
+
+      .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+        margin-top: 8px;
+        margin-bottom: 20px;
+      }
+      @media (max-width: 900px) {
+        .summary-grid {
+          grid-template-columns: minmax(0, 1fr);
+        }
+      }
+
+      .summary-card {
+        border-radius: 12px;
+        padding: 10px 12px;
+        background: linear-gradient(
+          135deg,
+          rgba(15, 23, 42, 0.85),
+          rgba(15, 23, 42, 0.95)
+        );
+        border: 1px solid rgba(31, 41, 55, 0.9);
+      }
+      .summary-label {
+        font-size: 11px;
+        color: var(--text-muted);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        margin-bottom: 4px;
+      }
+      .summary-value {
+        font-size: 14px;
+        font-weight: 600;
+      }
+      .summary-sub {
+        font-size: 11px;
+        color: var(--text-muted);
+        margin-top: 2px;
+      }
+
+      .btn-primary {
+        border-radius: 999px;
+        border: none;
+        padding: 10px 24px;
+        font-size: 13px;
+        font-weight: 500;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+        display: inline-flex;
+        gap: 8px;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(
+          to right,
+          var(--accent),
+          var(--accent-strong)
+        );
+        color: #0b1120;
+        cursor: pointer;
+        box-shadow: 0 12px 25px rgba(56, 189, 248, 0.4);
+        transition: transform 0.12s ease, box-shadow 0.12s ease,
+          filter 0.12s ease;
+      }
+      .btn-primary:hover {
+        transform: translateY(-1px);
+        filter: brightness(1.05);
+        box-shadow: 0 16px 30px rgba(56, 189, 248, 0.5);
+      }
+
+      .log-area {
+        margin-top: 18px;
+        border-radius: 12px;
+        border: 1px solid rgba(31, 41, 55, 0.9);
+        background: rgba(15, 23, 42, 0.97);
+        padding: 10px;
+        font-size: 12px;
+        max-height: 260px;
+        overflow: auto;
+        white-space: pre;
+      }
+
+      .toast {
+        position: fixed;
+        right: 18px;
+        bottom: 18px;
+        padding: 9px 12px;
+        border-radius: 12px;
+        background: rgba(15, 23, 42, 0.96);
+        border: 1px solid rgba(148, 163, 184, 0.4);
+        font-size: 12px;
+        display: none;
+        align-items: center;
+        gap: 8px;
+        color: var(--text-main);
+        box-shadow: 0 16px 40px rgba(15, 23, 42, 0.9);
+        z-index: 50;
+      }
+      .toast.show {
+        display: inline-flex;
+        animation: fadeIn 0.2s ease-out;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .table-wrapper {
+        border-radius: 14px;
+        border: 1px solid rgba(31, 41, 55, 0.9);
+        overflow: hidden;
+        background: rgba(15, 23, 42, 0.95);
+        margin-top: 10px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+      }
+      th,
+      td {
+        padding: 8px 9px;
+        border-bottom: 1px solid #1f2937;
+        white-space: nowrap;
+        text-align: left;
+      }
+      th {
+        font-size: 11px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+      }
+      tbody tr:hover {
+        background: rgba(15, 23, 42, 0.9);
+      }
+      tbody tr:last-child td {
+        border-bottom: none;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="app-bar">
+      <div style="display: flex; align-items: center">
+        <div class="app-title-group">
+          <div class="app-logo"><span>SB</span></div>
+          <div>
+            <div class="app-title-main">SmartBilling</div>
+            <div class="app-title-sub">
+              Local Billing + SAN Backup + ML Forecast
+            </div>
+          </div>
+        </div>
+        <nav class="nav-links">
+          <a href="index.html" class="nav-link">Billing</a>
+          <a href="management.html" class="nav-link">Manage</a>
+          <a href="backup.html" class="nav-link active">Backup</a>
+          <a href="prediction.html" class="nav-link">Prediction</a>
+        </nav>
+      </div>
+      <div class="pill">
+        <span class="pill-dot"></span>
+        <span>SAN Connected</span>
+      </div>
+    </header>
+
+    <main class="app-shell">
+      <div class="app-container">
+        <section class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Backup to SAN</div>
+              <div class="card-subtitle">
+                Take a one-click backup of all shop data to the SAN and log
+                usage.
+              </div>
+            </div>
+          </div>
+
+          <div class="summary-grid">
+            <div class="summary-card">
+              <div class="summary-label">SAN Usage</div>
+              <div class="summary-value" id="sanUsage">Loading...</div>
+              <div class="summary-sub" id="sanTimestamp">Last updated: -</div>
+            </div>
+            <div class="summary-card">
+              <div class="summary-label">Predicted 95% Full</div>
+              <div class="summary-value" id="sanPrediction">-</div>
+              <div class="summary-sub" id="daysLeft">-</div>
+            </div>
+            <div class="summary-card">
+              <div class="summary-label">Last Backup Status</div>
+              <div class="summary-value" id="backupStatus">
+                No backup run yet
+              </div>
+              <div class="summary-sub" id="backupDetail">
+                Click the button below to start.
+              </div>
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: center; margin-top: 8px">
+            <button id="btnRunBackup" class="btn-primary">
+              🔁 Run Backup + Prediction
+            </button>
+          </div>
+
+          <div style="margin-top: 24px">
+            <div style="font-size: 13px; font-weight: 600; margin-bottom: 6px">
+              Backup History
+            </div>
+            <div class="table-wrapper">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Date/Time</th>
+                    <th>Used (GB)</th>
+                    <th>Total (GB)</th>
+                  </tr>
+                </thead>
+                <tbody id="backupTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="log-area" id="backupLog">
+            <!-- Optional text log / response will show here -->
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <div id="toast" class="toast">
+      <span id="toastIcon">✅</span>
+      <span id="toastText">Action completed</span>
+    </div>
+
+    <script>
+      function showToast(message, type = "success") {
+        const toast = document.getElementById("toast");
+        const icon = document.getElementById("toastIcon");
+        const text = document.getElementById("toastText");
+
+        text.textContent = message;
+        icon.textContent =
+          type === "success" ? "✅" : type === "error" ? "⚠️" : "ℹ️";
+        toast.classList.add("show");
+        setTimeout(() => toast.classList.remove("show"), 2600);
+      }
+
+      async function loadSanStatus() {
+        const usageEl = document.getElementById("sanUsage");
+        const tsEl = document.getElementById("sanTimestamp");
+        const predEl = document.getElementById("sanPrediction");
+        const daysLeftEl = document.getElementById("daysLeft");
+
+        try {
+          const res = await fetch("/api/san-status");
+          const data = await res.json();
+
+          if (data.message) {
+            usageEl.textContent = "No usage logged";
+            tsEl.textContent = "Last updated: -";
+            predEl.textContent = "Run backup once to start prediction.";
+            daysLeftEl.textContent = "-";
+            return;
+          }
+
+          usageEl.textContent = `${data.used_gb} GB / ${data.total_gb} GB`;
+          tsEl.textContent = `Last updated: ${data.timestamp}`;
+          predEl.textContent = data.prediction_date
+            ? data.prediction_date
+            : "Not enough data yet.";
+          if (data.prediction_date) {
+            // Calculate days left
+            const now = new Date();
+            const predDate = new Date(data.prediction_date);
+            const diff = Math.ceil((predDate - now) / (1000 * 60 * 60 * 24));
+            daysLeftEl.textContent =
+              diff > 0 ? `${diff} days left` : "Full or past due";
+          } else {
+            daysLeftEl.textContent = "-";
+          }
+        } catch (err) {
+          console.error(err);
+          usageEl.textContent = "Error";
+          tsEl.textContent = "Last updated: -";
+          predEl.textContent = "Failed to load status.";
+          daysLeftEl.textContent = "-";
+        }
+      }
+
+      async function loadBackupHistory() {
+        try {
+          const res = await fetch("/api/backup-log");
+          let statusEl = document.getElementById("backupStatus");
+          const data = await res.json();
+          //console.log(data[0]['timestamp']);
+          statusEl.textContent = data[0]['timestamp'];
+          
+          const tb = document.getElementById("backupTableBody");
+          tb.innerHTML = "";
+          data.forEach((row) => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+            <td>${row.timestamp}</td>
+            <td>${row.used_gb}</td>
+            <td>${row.total_gb}</td>
+          `;
+            tb.appendChild(tr);
+          });
+        } catch (err) {
+          console.error(err);
+        }
+      }
+
+      async function runBackupAndPrediction() {
+        const btn = document.getElementById("btnRunBackup");
+        const detailEl = document.getElementById("backupDetail");
+        const logEl = document.getElementById("backupLog");
+
+        btn.disabled = true;
+        btn.textContent = "Running...";
+        detailEl.textContent = "Please wait, backup is in progress.";
+
+        try {
+          const res = await fetch("/api/run-backup-and-predict", {
+            method: "POST",
+          });
+          const data = await res.json();
+
+          if (!res.ok || data.success === false) {
+            showToast(data.error || "Backup failed", "error");
+            detailEl.textContent = data.error || "Check server logs.";
+          } else {
+            showToast("Backup completed and prediction updated");
+            detailEl.textContent = `Copied data and logged usage at ${data.timestamp}.`;
+
+            if (data.used_gb !== undefined && data.total_gb !== undefined) {
+              document.getElementById(
+                "sanUsage"
+              ).textContent = `${data.used_gb} GB / ${data.total_gb} GB`;
+              document.getElementById(
+                "sanTimestamp"
+              ).textContent = `Last updated: ${data.timestamp}`;
+            }
+            if (data.prediction_date) {
+              document.getElementById("sanPrediction").textContent =
+                data.prediction_date;
+            }
+          }
+
+          logEl.textContent = JSON.stringify(data, null, 2);
+        } catch (err) {
+          console.error(err);
+          showToast("Backup request failed", "error");
+          detailEl.textContent = "Could not reach server.";
+        } finally {
+          btn.disabled = false;
+          btn.textContent = "🔁 Run Backup + Prediction";
+        }
+      }
+
+      document
+        .getElementById("btnRunBackup")
+        .addEventListener("click", async function () {
+          await runBackupAndPrediction();
+          await loadSanStatus();
+          await loadBackupHistory();
+        });
+
+      // On page load
+      loadSanStatus();
+      loadBackupHistory();
+    </script>
+  </body>
+</html>

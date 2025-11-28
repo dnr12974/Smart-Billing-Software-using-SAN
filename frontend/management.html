@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Smart Billing – Manage Data</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" />
+  <style>
+    :root {
+      --bg: #0f172a;
+      --bg-card: #020617;
+      --bg-card-soft: #02081f;
+      --accent: #38bdf8;
+      --accent-soft: rgba(56,189,248,0.15);
+      --accent-strong: #0ea5e9;
+      --border-subtle: #1f2937;
+      --text-main: #e5e7eb;
+      --text-muted: #9ca3af;
+      --danger: #f97373;
+      --success: #4ade80;
+      --warning: #fbbf24;
+      --radius-lg: 16px;
+      --radius-sm: 10px;
+      --shadow-elevated: 0 20px 40px rgba(15,23,42,0.9);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: radial-gradient(circle at top, #0b1729, #020617 55%);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+    }
+    .app-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 28px;
+      border-bottom: 1px solid #1f2937;
+      background: rgba(15,23,42,0.95);
+      backdrop-filter: blur(14px);
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+    .app-title-group { display: flex; align-items: center; gap: 12px; }
+    .app-logo {
+      width: 38px; height: 38px; border-radius: 12px;
+      background: radial-gradient(circle at 20% 0%, #38bdf8, #0f172a 55%);
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 0 0 1px rgba(56,189,248,0.3), 0 18px 40px rgba(15,23,42,0.8);
+      font-weight: 700; letter-spacing: 0.02em;
+    }
+    .app-logo span { font-size: 16px; color: #e5f5ff; }
+    .app-title-main { font-size: 20px; font-weight: 600; }
+    .app-title-sub { font-size: 12px; color: var(--text-muted); }
+    .pill {
+      padding: 6px 12px; border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.6);
+      font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em;
+      color: var(--text-muted); display: inline-flex; align-items: center; gap: 6px;
+    }
+    .pill-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: #22c55e; box-shadow: 0 0 12px rgba(34,197,94,0.8);
+    }
+    .nav-links {
+      display: flex;
+      gap: 10px;
+      margin-left: 24px;
+      font-size: 12px;
+    }
+    .nav-link {
+      color: var(--text-muted);
+      text-decoration: none;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .nav-link:hover { border-color: rgba(148,163,184,0.8); }
+    .nav-link.active {
+      border-color: var(--accent);
+      color: #e0f2fe;
+      background: rgba(56,189,248,0.12);
+    }
+    .app-shell {
+      flex: 1;
+      display: flex;
+      padding: 20px;
+    }
+    .app-container {
+      width: 100%;
+      max-width: 100%;
+      display: block;
+    }
+    .card {
+      width: 100%;
+      background: radial-gradient(circle at top left, rgba(56,189,248,0.13), rgba(15,23,42,0.95));
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      border: 1px solid rgba(148,163,184,0.3);
+      box-shadow: var(--shadow-elevated);
+      min-height: 85vh;
+    }
+    .card-header {
+      display: flex; align-items: baseline; justify-content: space-between;
+      gap: 10px; margin-bottom: 12px;
+    }
+    .card-title {
+      font-size: 15px; font-weight: 600; letter-spacing: 0.02em;
+      text-transform: uppercase; color: #e5f5ff;
+    }
+    .card-subtitle { font-size: 12px; color: var(--text-muted); }
+    .tab-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+    .tab-btn {
+      padding: 7px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.5);
+      background: rgba(15,23,42,0.9);
+      color: var(--text-muted);
+      font-size: 12px;
+      cursor: pointer;
+    }
+    .tab-btn.active {
+      border-color: var(--accent);
+      color: #e0f2fe;
+      background: rgba(56,189,248,0.18);
+    }
+    .section {
+      display: none;
+    }
+    .section.active {
+      display: block;
+    }
+    .form-grid {
+      display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px; margin-bottom: 10px;
+    }
+    @media (max-width: 900px) { .form-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (max-width: 600px) { .form-grid { grid-template-columns: minmax(0, 1fr); } }
+
+    .field { display: flex; flex-direction: column; gap: 4px; }
+    .field label {
+      font-size: 12px; font-weight: 500; color: var(--text-muted);
+    }
+    .input, select {
+      border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);
+      padding: 7px 9px; font-size: 13px;
+      background: rgba(15,23,42,0.9); color: var(--text-main);
+      outline: none; transition: border-color 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;
+    }
+    .input:focus, select:focus {
+      border-color: var(--accent-strong);
+      box-shadow: 0 0 0 1px rgba(56,189,248,0.4);
+      background: #020617;
+    }
+
+    .btn-primary {
+      border-radius: 999px; border: none; padding: 8px 15px;
+      font-size: 12px; font-weight: 500; letter-spacing: 0.02em;
+      text-transform: uppercase; display: inline-flex; gap: 6px;
+      align-items: center; justify-content: center;
+      background: linear-gradient(to right, var(--accent), var(--accent-strong));
+      color: #0b1120; cursor: pointer;
+      box-shadow: 0 12px 25px rgba(56,189,248,0.4);
+      transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
+    }
+    .btn-primary:hover {
+      transform: translateY(-1px); filter: brightness(1.05);
+      box-shadow: 0 16px 30px rgba(56,189,248,0.5);
+    }
+    .btn-sm {
+      padding: 4px 10px;
+      font-size: 11px;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+    }
+    .btn-edit {
+      background: #0ea5e9;
+      color: #0b1120;
+      margin-right: 4px;
+    }
+    .btn-delete {
+      background: #f97373;
+      color: #0b1120;
+    }
+    .btn-row {
+      display: flex; align-items: center; justify-content: flex-end;
+      gap: 8px; margin-top: 6px;
+    }
+    .table-wrapper {
+      border-radius: 14px; border: 1px solid rgba(31,41,55,0.9);
+      overflow: hidden; background: rgba(15,23,42,0.95); margin-top: 10px;
+    }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th, td {
+      padding: 8px 9px; border-bottom: 1px solid #1f2937;
+      white-space: nowrap; text-align: left;
+    }
+    th {
+      font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--text-muted);
+    }
+    tbody tr:hover { background: rgba(15,23,42,0.9); }
+    tbody tr:last-child td { border-bottom: none; }
+    .text-right { text-align: right; }
+
+    .toast {
+      position: fixed; right: 18px; bottom: 18px;
+      padding: 9px 12px; border-radius: 12px;
+      background: rgba(15,23,42,0.96);
+      border: 1px solid rgba(148,163,184,0.4);
+      font-size: 12px; display: none;
+      align-items: center; gap: 8px; color: var(--text-main);
+      box-shadow: 0 16px 40px rgba(15,23,42,0.9);
+      z-index: 50;
+    }
+    .toast.show { display: inline-flex; animation: fadeIn 0.2s ease-out; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <header class="app-bar">
+    <div style="display:flex; align-items:center;">
+      <div class="app-title-group">
+        <div class="app-logo"><span>SB</span></div>
+        <div>
+          <div class="app-title-main">SmartBilling</div>
+          <div class="app-title-sub">Local Billing + SAN Backup + ML Forecast</div>
+        </div>
+      </div>
+      <nav class="nav-links">
+        <a href="index.html" class="nav-link">Billing</a>
+        <a href="management.html" class="nav-link active">Manage</a>
+        <a href="backup.html" class="nav-link">Backup</a>
+        <a href="prediction.html" class="nav-link">Prediction</a>
+      </nav>
+    </div>
+    <div class="pill">
+      <span class="pill-dot"></span>
+      <span>SAN Connected</span>
+    </div>
+  </header>
+
+  <main class="app-shell">
+    <div class="app-container">
+      <section class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Inventory & Master Data</div>
+            <div class="card-subtitle">
+              Manage employees, suppliers, categories, products and view sales.
+            </div>
+          </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tab-row">
+          <button class="tab-btn active" data-section="employees">Employees</button>
+          <button class="tab-btn" data-section="suppliers">Suppliers</button>
+          <button class="tab-btn" data-section="categories">Categories</button>
+          <button class="tab-btn" data-section="products">Products</button>
+          <button class="tab-btn" data-section="sales">Sales</button>
+        </div>
+
+        <!-- EMPLOYEES -->
+        <div id="section-employees" class="section active">
+          <form id="employeeForm">
+            <div class="form-grid">
+              <div class="field">
+                <label for="empName">Name</label>
+                <input id="empName" class="input" required />
+              </div>
+              <div class="field">
+                <label for="empEmail">Email</label>
+                <input id="empEmail" class="input" type="email" />
+              </div>
+              <div class="field">
+                <label for="empGender">Gender</label>
+                <select id="empGender">
+                  <option value="">Select</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="empContact">Contact</label>
+                <input id="empContact" class="input" />
+              </div>
+              <div class="field">
+                <label for="empDob">DOB</label>
+                <input id="empDob" class="input" type="date" />
+              </div>
+              <div class="field">
+                <label for="empDoj">DOJ</label>
+                <input id="empDoj" class="input" type="date" />
+              </div>
+              <div class="field">
+                <label for="empUtype">User Type</label>
+                <select id="empUtype">
+                  <option value="">Select</option>
+                  <option value="Admin">Admin</option>
+                  <option value="Employee">Employee</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="empSalary">Salary</label>
+                <input id="empSalary" class="input" type="number" step="0.01" />
+              </div>
+              <div class="field">
+                <label for="empAddress">Address</label>
+                <input id="empAddress" class="input" />
+              </div>
+              <div class="field">
+                <label for="empPass">Password</label>
+                <input id="empPass" class="input" type="password" />
+              </div>
+            </div>
+            <div class="btn-row">
+              <button class="btn-primary" type="submit">Save Employee</button>
+            </div>
+          </form>
+
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>EID</th>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Contact</th>
+                  <th>User Type</th>
+                  <th class="text-right">Salary</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="empTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- SUPPLIERS -->
+        <div id="section-suppliers" class="section">
+          <form id="supplierForm">
+            <div class="form-grid">
+              <div class="field">
+                <label for="supName">Name</label>
+                <input id="supName" class="input" required />
+              </div>
+              <div class="field">
+                <label for="supContact">Contact</label>
+                <input id="supContact" class="input" />
+              </div>
+              <div class="field">
+                <label for="supDesc">Description</label>
+                <input id="supDesc" class="input" />
+              </div>
+            </div>
+            <div class="btn-row">
+              <button class="btn-primary" type="submit">Save Supplier</button>
+            </div>
+          </form>
+
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>Invoice</th>
+                  <th>Name</th>
+                  <th>Contact</th>
+                  <th>Description</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="supTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- CATEGORIES -->
+        <div id="section-categories" class="section">
+          <form id="categoryForm">
+            <div class="form-grid">
+              <div class="field">
+                <label for="catName">Category Name</label>
+                <input id="catName" class="input" required />
+              </div>
+            </div>
+            <div class="btn-row">
+              <button class="btn-primary" type="submit">Add Category</button>
+            </div>
+          </form>
+
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="catTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- PRODUCTS -->
+        <div id="section-products" class="section">
+          <form id="productForm">
+            <div class="form-grid">
+              <div class="field">
+                <label for="prodName">Product Name</label>
+                <input id="prodName" class="input" required />
+              </div>
+              <div class="field">
+                <label for="prodCategory">Category</label>
+                <select id="prodCategory" class="input">
+                  <option value="">Select category</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="prodSupplier">Supplier</label>
+                <select id="prodSupplier" class="input">
+                  <option value="">Select supplier</option>
+                </select>
+              </div>
+              
+              <div class="field">
+                <label for="prodPrice">Price</label>
+                <input id="prodPrice" class="input" type="number" step="0.01" required />
+              </div>
+              <div class="field">
+                <label for="prodQty">Quantity</label>
+                <input id="prodQty" class="input" type="number" required />
+              </div>
+              <div class="field">
+                <label for="prodStatus">Status</label>
+                <select id="prodStatus">
+                  <option value="Active">Active</option>
+                  <option value="Inactive">Inactive</option>
+                </select>
+              </div>
+            </div>
+            <div class="btn-row">
+              <button class="btn-primary" type="submit">Save Product</button>
+            </div>
+          </form>
+
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>PID</th>
+                  <th>Name</th>
+                  <th>Category</th>
+                  <th>Supplier</th>
+                  <th class="text-right">Price</th>
+                  <th class="text-right">Qty</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="prodTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- SALES (read-only list) -->
+        <div id="section-sales" class="section">
+          <p style="font-size:12px; color:var(--text-muted); margin-bottom:6px;">
+            This shows bills saved from the Billing screen.
+          </p>
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>SID</th>
+                  <th>Invoice</th>
+                  <th>Customer</th>
+                  <th>Date</th>
+                  <th class="text-right">Net Total (₹)</th>
+                </tr>
+              </thead>
+              <tbody id="salesTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+    </div>
+  </main>
+
+  <div id="toast" class="toast">
+    <span id="toastIcon">✅</span>
+    <span id="toastText">Action completed</span>
+  </div>
+
+  <script>
+    const API_BASE = "";
+
+    function showToast(message, type = "success") {
+      const toast = document.getElementById("toast");
+      const icon = document.getElementById("toastIcon");
+      const text = document.getElementById("toastText");
+
+      text.textContent = message;
+      icon.textContent = type === "success" ? "✅" : (type === "error" ? "⚠️" : "ℹ️");
+      toast.classList.add("show");
+      setTimeout(() => toast.classList.remove("show"), 2500);
+    }
+
+    // ---------- TAB SWITCH ----------
+    document.querySelectorAll(".tab-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+
+        const target = btn.getAttribute("data-section");
+        document.querySelectorAll(".section").forEach(sec => {
+          sec.classList.toggle("active", sec.id === "section-" + target);
+        });
+
+        // lazy-load per section
+        if (target === "employees") loadEmployees();
+        if (target === "suppliers") loadSuppliers();
+        if (target === "categories") loadCategories();
+        if (target === "products") loadProducts();
+        if (target === "sales") loadSales();
+      });
+    });
+
+    // ---------- EMPLOYEES ----------
+    async function loadEmployees() {
+      try {
+        const res = await fetch(`${API_BASE}/api/employees`);
+        const data = await res.json();
+        const tb = document.getElementById("empTableBody");
+        tb.innerHTML = "";
+        data.forEach(emp => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${emp.eid}</td>
+            <td>${emp.name || ""}</td>
+            <td>${emp.email || ""}</td>
+            <td>${emp.contact || ""}</td>
+            <td>${emp.utype || ""}</td>
+            <td class="text-right">${emp.salary || ""}</td>
+            <td>
+              <button class="btn-sm btn-edit" onclick='editEmployee(${emp.eid})'>Edit</button>
+              <button class="btn-sm btn-delete" onclick='deleteEmployee(${emp.eid})'>Delete</button>
+            </td>
+          `;
+          tb.appendChild(tr);
+        });
+      } catch (err) {
+        console.error(err);
+        showToast("Failed to load employees", "error");
+      }
+    }
+
+    document.getElementById("employeeForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const payload = {
+        name: document.getElementById("empName").value.trim(),
+        email: document.getElementById("empEmail").value.trim(),
+        gender: document.getElementById("empGender").value,
+        contact: document.getElementById("empContact").value.trim(),
+        dob: document.getElementById("empDob").value,
+        doj: document.getElementById("empDoj").value,
+        pass: document.getElementById("empPass").value,
+        utype: document.getElementById("empUtype").value,
+        address: document.getElementById("empAddress").value.trim(),
+        salary: document.getElementById("empSalary").value
+      };
+
+      try {
+        await fetch(`${API_BASE}/api/employees`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        e.target.reset();
+        showToast("Employee saved");
+        loadEmployees();
+      } catch (err) {
+        console.error(err);
+        showToast("Failed to save employee", "error");
+      }
+    });
+
+    async function editEmployee(eid) {
+      const newName = prompt("Enter new name (leave blank to keep same):");
+      if (newName === null) return; // cancel
+
+      try {
+        const res = await fetch(`${API_BASE}/api/employees`);
+        const data = await res.json();
+        const emp = data.find(e => e.eid === eid);
+        if (!emp) {
+          showToast("Employee not found", "error");
+          return;
+        }
+
+        const payload = {
+          ...emp,
+          name: newName.trim() || emp.name
+        };
+
+        await fetch(`${API_BASE}/api/employees/${eid}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        showToast("Employee updated");
+        loadEmployees();
+      } catch (err) {
+        console.error(err);
+        showToast("Failed to update employee", "error");
+      }
+    }
+
+    async function deleteEmployee(eid) {
+      if (!confirm("Delete this employee?")) return;
+      try {
+        await fetch(`${API_BASE}/api/employees/${eid}`, {
+          method: "DELETE"
+        });
+        showToast("Employee deleted");
+        loadEmployees();
+      } catch (err) {
+        console.error(err);
+        showToast("Failed to delete employee", "error");
+      }
+    }
+
+    // ---------- SUPPLIERS ----------
+    async function loadSuppliers() {
+  try {
+    const res = await fetch(`${API_BASE}/api/suppliers`);
+    const data = await res.json();
+
+    // 1) Fill table
+    const tb = document.getElementById("supTableBody");
+    tb.innerHTML = "";
+    data.forEach(s => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${s.invoice}</td>
+        <td>${s.name || ""}</td>
+        <td>${s.contact || ""}</td>
+        <td>${s.desc || ""}</td>
+        <td>
+          <button class="btn-sm btn-edit" onclick='editSupplier(${s.invoice})'>Edit</button>
+          <button class="btn-sm btn-delete" onclick='deleteSupplier(${s.invoice})'>Delete</button>
+        </td>
+      `;
+      tb.appendChild(tr);
+    });
+
+    // 2) Fill product Supplier dropdown
+    const supSelect = document.getElementById("prodSupplier");
+    if (supSelect) {
+      supSelect.innerHTML = `<option value="">Select supplier</option>`;
+      data.forEach(s => {
+        const opt = document.createElement("option");
+        opt.value = s.name || "";      // store supplier name string in product.supplier
+        opt.textContent = s.name || "";
+        supSelect.appendChild(opt);
+      });
+    }
+
+  } catch (err) {
+    console.error(err);
+    showToast("Failed to load suppliers", "error");
+  }
+}
+
+
+    document.getElementById("supplierForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const payload = {
+        name: document.getElementById("supName").value.trim(),
+        contact: document.getElementById("supContact").value.trim(),
+        desc: document.getElementById("supDesc").value.trim()
+      };
+      try {
+        await fetch(`${API_BASE}/api/suppliers`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        e.target.reset();
+        showToast("Supplier saved");
+        loadSuppliers();
+      } catch (err) {
+        console.error(err);
+        showToast("Failed to save supplier", "error");
+      }
+    });
+
+    async function editSupplier(invoice) {
+      const newName = prompt("Enter new supplier name (blank = keep same):");
+      if (newName === null) return;
+
+      try {
+        const res = await fetch(`${API_BASE}/api/suppliers`);
+        const data = await res.json();
+        const s = data.find(x => x.invoice === invoice);
+        if (!s) {
+          showToast("Supplier not found", "error");
+          return;
+        }
+        const payload = {
+          ...s,
+          name: newName.trim() || s.name
+        };
+        await fetch(`${API_BASE}/api/suppliers/${invoice}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        showToast("Supplier updated");
+        loadSuppliers();
+      } catch (err) {
+        console.error(err);
+        showToast("Failed to update supplier", "error");
+      }
+    }
+
+    async function deleteSupplier(invoice) {
+      if (!confirm("Delete this supplier?")) return;
+      try {
+        await fetch(`${API_BASE}/api/suppliers/${invoice}`, { method: "DELETE" });
+        showToast("Supplier deleted");
+        loadSuppliers();
+      } catch (err) {
+        console.error(err);
+        showToast("Failed to delete supplier", "error");
+      }
+    }
+
+    // ---------- CATEGORIES ----------
+    async function loadCategories() {
+  try {
+    const res = await fetch(`${API_BASE}/api/categories`);
+    const data = await res.json();
+
+    // 1) Fill table
+    const tb = document.getElementById("catTableBody");
+    tb.innerHTML = "";
+    data.forEach(c => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${c.cid}</td>
+        <td>${c.name}</td>
+        <td>
+          <button class="btn-sm btn-delete" onclick='deleteCategory(${c.cid})'>Delete</button>
+        </td>
+      `;
+      tb.appendChild(tr);
+    });
+
+    // 2) Fill product Category dropdown
+    const catSelect = document.getElementById("prodCategory");
+    if (catSelect) {
+      catSelect.innerHTML = `<option value="">Select category</option>`;
+      data.forEach(c => {
+        const opt = document.createElement("option");
+        opt.value = c.name;        // we store the name string in product.category
+        opt.textContent = c.name;
+        catSelect.appendChild(opt);
+      });
+    }
+
+  } catch (err) {
+    console.error(err);
+    showToast("Failed to load categories", "error");
+  }
+}
+
+
+    document.getElementById("categoryForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const name = document.getElementById("catName").value.trim();
+      if (!name) return;
+      try {
+        await fetch(`${API_BASE}/api/categories`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name })
+        });
+        e.target.reset();
+        showToast("Category added");
+        loadCategories();
+      } catch (err) {
+        console.error(err);
+        showToast("Failed to add category", "error");
+      }
+    });
+
+    async function deleteCategory(cid) {
+      if (!confirm("Delete this category?")) return;
+      try {
+        await fetch(`${API_BASE}/api/categories/${cid}`, { method: "DELETE" });
+        showToast("Category deleted");
+        loadCategories();
+      } catch (err) {
+        console.error(err);
+        showToast("Failed to delete category", "error");
+      }
+    }
+
+    // ---------- PRODUCTS ----------
+    async function loadProducts() {
+      try {
+        const res = await fetch(`${API_BASE}/api/products`);
+        const data = await res.json();
+        const tb = document.getElementById("prodTableBody");
+        tb.innerHTML = "";
+        data.forEach(p => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${p.pid}</td>
+            <td>${p.name || ""}</td>
+            <td>${p.category || ""}</td>
+            <td>${p.supplier || ""}</td>
+            <td class="text-right">${p.price != null ? p.price.toFixed(2) : ""}</td>
+            <td class="text-right">${p.qty != null ? p.qty : ""}</td>
+            <td>${p.status || ""}</td>
+            <td>
+              <button class="btn-sm btn-edit" onclick='editProduct(${p.pid})'>Edit</button>
+              <button class="btn-sm btn-delete" onclick='deleteProduct(${p.pid})'>Delete</button>
+            </td>
+          `;
+          tb.appendChild(tr);
+        });
+      } catch (err) {
+        console.error(err);
+        showToast("Failed to load products", "error");
+      }
+    }
+
+    document.getElementById("productForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const payload = {
+        name: document.getElementById("prodName").value.trim(),
+        category: document.getElementById("prodCategory").value.trim(),
+        supplier: document.getElementById("prodSupplier").value.trim(),
+        price: Number(document.getElementById("prodPrice").value),
+        qty: Number(document.getElementById("prodQty").value),
+        status: document.getElementById("prodStatus").value
+      };
+      try {
+        await fetch(`${API_BASE}/api/products`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        e.target.reset();
+        showToast("Product saved");
+        loadProducts();
+      } catch (err) {
+        console.error(err);
+        showToast("Failed to save product", "error");
+      }
+    });
+
+    async function editProduct(pid) {
+      const newName = prompt("New product name (blank = keep same):");
+      if (newName === null) return;
+
+      try {
+        const res = await fetch(`${API_BASE}/api/products`);
+        const data = await res.json();
+        const p = data.find(x => x.pid === pid);
+        if (!p) {
+          showToast("Product not found", "error");
+          return;
+        }
+        const payload = {
+          ...p,
+          name: newName.trim() || p.name
+        };
+        await fetch(`${API_BASE}/api/products/${pid}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        showToast("Product updated");
+        loadProducts();
+      } catch (err) {
+        console.error(err);
+        showToast("Failed to update product", "error");
+      }
+    }
+
+    async function deleteProduct(pid) {
+      if (!confirm("Delete this product?")) return;
+      try {
+        await fetch(`${API_BASE}/api/products/${pid}`, { method: "DELETE" });
+        showToast("Product deleted");
+        loadProducts();
+      } catch (err) {
+        console.error(err);
+        showToast("Failed to delete product", "error");
+      }
+    }
+
+    // ---------- SALES ----------
+    async function loadSales() {
+      try {
+        const res = await fetch(`${API_BASE}/api/sales`);
+        const data = await res.json();
+        const tb = document.getElementById("salesTableBody");
+        tb.innerHTML = "";
+        data.forEach(s => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${s.sid}</td>
+            <td>${s.invoice_no}</td>
+            <td>${s.customer_name || ""}</td>
+            <td>${s.bill_date || ""}</td>
+            <td class="text-right">${s.net_total != null ? s.net_total.toFixed(2) : ""}</td>
+          `;
+          tb.appendChild(tr);
+        });
+      } catch (err) {
+        console.error(err);
+        showToast("Failed to load sales", "error");
+      }
+    }
+
+    // ---------- INITIAL LOAD ----------
+    // default tab = employees
+    // ---------- INITIAL LOAD ----------
+// default tab = employees
+loadEmployees();
+loadCategories();  // so product Category dropdown is ready
+loadSuppliers();   // so product Supplier dropdown is ready
+
+  </script>
+</body>
+</html>
