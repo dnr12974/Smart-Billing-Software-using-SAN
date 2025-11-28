@@ -1,6 +1,5 @@
 node_modules/
 ims.db
-__pycache__/
 *.pyc
 .vscode/
 *.log
