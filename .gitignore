@@ -1,0 +1,9 @@
+node_modules/
+ims.db
+__pycache__/
+*.pyc
+.vscode/
+*.log
+backup/predict_usage_debug.txt
+backup/san_prediction.json
+backup/san_usage_log.csv
