@@ -10,7 +10,7 @@ Small shops and retail businesses usually depend on **local computer storage** t
 - **Limited storage scalability**
 - **No fault tolerance** for business-critical data
 
-In addition to these limitations, **cloud services and enterprise SAN servers are often too expensive for small businesses**, as they involve high infrastructure cost, recurring subscription charges, and dependence on third-party service providers. 
+In addition to these limitations, **cloud services and enterprise SAN servers are often too expensive for small businesses**, as they involve high infrastructure cost, recurring subscription charges, and dependence on third-party service providers.
 
 Since billing data directly affects business operations, these limitations pose a serious risk. Hence, a **secure, centralized, scalable, reliable, and cost-effective storage solution** is required.
 
