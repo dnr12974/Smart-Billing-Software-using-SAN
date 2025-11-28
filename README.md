@@ -19,9 +19,11 @@ Since billing data directly affects business operations, these limitations pose 
 
 ## 2. How SAN Is Used in This Project to Solve the Problem
 
-This project integrates a **Storage Area Network (SAN)** with the Smart Billing Software to eliminate the weaknesses of local storage.
+This project implements a **real IP-based Storage Area Network (IP-SAN)** using the **iSCSI protocol over TCP/IP and Ethernet** to replace traditional local storage used in billing systems.
 
 Instead of storing billing data on the local disk, **all billing records, invoices, logs, and backups are stored on a SAN-mounted storage volume**. The SAN appears as a local disk to the billing software but is physically a **remote network-based block storage device**.
+
+All disk I/O operations are transmitted as **SCSI commands encapsulated inside TCP/IP packets** and transported over a standard Ethernet LAN, thereby achieving **true network-based block storage**.
 
 SAN integration ensures:
 
