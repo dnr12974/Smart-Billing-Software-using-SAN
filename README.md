@@ -31,7 +31,7 @@ SAN integration ensures:
 - Data remains **safe even if the billing system crashes**
 - Storage can be **expanded without modifying the application**
 - Backups happen **directly to SAN**
-- Implemented CHAP Authentication and IPSec Tunneling between client and SAN Server.These two security layers ensured secure communication.
+- Implemented **CHAP Authentication** and **IPSec Tunneling between client and SAN Server**.These two security layers ensured secure communication.
 Thus, SAN converts the billing system into a **secure, enterprise-grade storage solution** suitable even for small businesses.
 
 ---
