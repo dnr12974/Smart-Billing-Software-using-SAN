@@ -1,6 +1,6 @@
 PRAGMA foreign_keys = ON;
 
--- Employee table (same fields as original Tkinter project)
+-- Employee table 
 CREATE TABLE IF NOT EXISTS employee (
   eid INTEGER PRIMARY KEY AUTOINCREMENT,
   name    TEXT,
